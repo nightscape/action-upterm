@@ -17,7 +17,7 @@ export async function run() {
 
     core.debug('Installing dependencies');
     if (process.platform == 'linux') {
-      await execShellCommand(`tar zxvf ./upterm_linux_amd64.tar.gz -C /tmp upterm`);
+      await execShellCommand(`tar zxvf ${process.env.GITHUB_WORKSPACE}/upterm_linux_amd64.tar.gz -C /tmp upterm`);
       await execShellCommand('if ! command -v tmux &>/dev/null; then sudo apt-get -y install tmux; fi');
     } else {
       await execShellCommand('brew install owenthereal/upterm/upterm tmux');
