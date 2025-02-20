@@ -98,9 +98,11 @@ export async function run() {
     core.info(`Creating a new session. Connecting to upterm server ${uptermServer}`);
     let tmuxPath = path.join(__dirname, '..', 'tmux');
     core.info(`tmux path: ${tmuxPath}`);
-    await execShellCommand(`${tmuxPath} new -d -s upterm-wrapper -x 132 -y 43 "/tmp/upterm host --accept --server '${uptermServer}' ${authorizedKeysParameter} --force-command '${tmuxPath} attach -t upterm' -- ${tmuxPath} new -s upterm -x 132 -y 43"`);
+    let r1 = await execShellCommand(`${tmuxPath} new -d -s upterm-wrapper -x 132 -y 43 "/tmp/upterm host --accept --server '${uptermServer}' ${authorizedKeysParameter} --force-command '${tmuxPath} attach -t upterm' -- ${tmuxPath} new -s upterm -x 132 -y 43"`);
+    core.info(`r1: ${r1}`);
     // resize terminal for largest client by default
-    await execShellCommand(`${tmuxPath} set -t upterm-wrapper window-size largest; ${tmuxPath} set -t upterm window-size largest`);
+    let r2 = await execShellCommand(`${tmuxPath} set -t upterm-wrapper window-size largest; ${tmuxPath} set -t upterm window-size largest`);
+    core.info(`r2: ${r2}`);
     console.debug('Created new session successfully');
     if (waitTimeoutMinutes !== '') {
       let timeout;
