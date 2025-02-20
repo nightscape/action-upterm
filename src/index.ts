@@ -30,33 +30,24 @@ export async function run() {
     if (!fs.existsSync(path.join(sshPath, 'id_rsa'))) {
       core.debug('Generating SSH keys');
       fs.mkdirSync(sshPath, { recursive: true });
-      try {
-        await execShellCommand(`ssh-keygen -q -t rsa -N "" -f ${path.join(sshPath, 'id_rsa')} && ssh-keygen -q -t ed25519 -N "" -f ${path.join(sshPath, 'id_ed25519')}`);
-      } catch (error) {
-        // Fall back to Node's crypto module if ssh-keygen is not available.
-        if (error.message.includes('command not found')) {
-          core.info('ssh-keygen not found. Generating keys using Node.js crypto module.');
+      // Fall back to Node's crypto module if ssh-keygen is not available.
+      core.info('ssh-keygen not found. Generating keys using Node.js crypto module.');
 
-          // Generate ED25519 key pair
-          const { publicKey: edPublic, privateKey: edPrivate } = generateKeyPairSync('ed25519', {
-            publicKeyEncoding: { format: 'ssh' },
-            privateKeyEncoding: { format: 'openssh' }
-          });
-          // Export the private key in DER format (using PKCS#8) then convert to base64
-          const edPrivateExported = edPrivate.export({ type: 'pkcs8', format: 'der' });
-          const edPrivateBase64 = edPrivateExported.toString('base64');
+      // Generate ED25519 key pair
+      const { publicKey: edPublic, privateKey: edPrivate } = generateKeyPairSync('ed25519', {
+        publicKeyEncoding: { format: 'ssh' },
+        privateKeyEncoding: { format: 'openssh' }
+      });
+      // Export the private key in DER format (using PKCS#8) then convert to base64
+      const edPrivateExported = edPrivate.export({ type: 'pkcs8', format: 'der' });
+      const edPrivateBase64 = edPrivateExported.toString('base64');
 
-          // Export the public key in DER format (using SPKI) then convert to base64
-          const edPublicExported = edPublic.export({ type: 'spki', format: 'der' });
-          const edPublicBase64 = edPublicExported.toString('base64');
+      // Export the public key in DER format (using SPKI) then convert to base64
+      const edPublicExported = edPublic.export({ type: 'spki', format: 'der' });
+      const edPublicBase64 = edPublicExported.toString('base64');
 
-          fs.writeFileSync(path.join(sshPath, 'id_ed25519'), edPrivateBase64);
-          fs.writeFileSync(path.join(sshPath, 'id_ed25519.pub'), edPublicBase64);
-        } else {
-          core.error(`error generating ssh keys. Error: ${error}`);
-          throw error;
-        }
-      }
+      fs.writeFileSync(path.join(sshPath, 'id_ed25519'), edPrivateBase64);
+      fs.writeFileSync(path.join(sshPath, 'id_ed25519.pub'), edPublicBase64);
       core.debug('Generated SSH keys successfully');
     } else {
       core.debug('SSH key already exists');
