@@ -62,7 +62,7 @@ export async function run() {
     } else {
       core.info('Auto-generating ~/.ssh/known_hosts by attempting connection to uptermd.upterm.dev');
       try {
-        await execShellCommand('ssh-keyscan uptermd.upterm.dev 2> /dev/null >> ~/.ssh/known_hosts');
+        await execShellCommand('echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICiecex8Dq718eSe1CCLgLvDmI7AagvCtax7brPFWkh4" >> ~/.ssh/known_hosts');
       } catch (error) {
         core.error(`error running ssh-keyscan. Error: ${error}`);
         throw error;
