@@ -17,8 +17,8 @@ export async function run() {
 
     core.debug('Installing dependencies');
     if (process.platform == 'linux') {
-      let command = `tar zxvf ${process.env.GITHUB_WORKSPACE}/upterm_linux_amd64.tar.gz -C /tmp upterm`;
-      core.info(`Installing upterm from ${process.env.GITHUB_WORKSPACE}/upterm_linux_amd64.tar.gz`);
+      let command = `tar zxvf ${process.env.GITHUB_ACTION_PATH}/upterm_linux_amd64.tar.gz -C /tmp upterm`;
+      core.info(`Installing upterm from ${process.env.GITHUB_ACTION_PATH}/upterm_linux_amd64.tar.gz`);
       core.info(command);
       await execShellCommand(command);
       await execShellCommand('if ! command -v tmux &>/dev/null; then sudo apt-get -y install tmux; fi');
