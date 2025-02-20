@@ -96,7 +96,7 @@ export async function run() {
     const uptermServer = core.getInput('upterm-server');
     const waitTimeoutMinutes = core.getInput('wait-timeout-minutes');
     core.info(`Creating a new session. Connecting to upterm server ${uptermServer}`);
-    let tmuxPath = `${__dirname}/../tmux`;
+    let tmuxPath = path.join(__dirname, '..', 'tmux');
     core.info(`tmux path: ${tmuxPath}`);
     await execShellCommand(`${tmuxPath} new -d -s upterm-wrapper -x 132 -y 43 "/tmp/upterm host --accept --server '${uptermServer}' ${authorizedKeysParameter} --force-command '${tmuxPath} attach -t upterm' -- ${tmuxPath} new -s upterm -x 132 -y 43"`);
     // resize terminal for largest client by default
