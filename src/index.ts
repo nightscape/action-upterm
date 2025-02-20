@@ -52,14 +52,12 @@ export async function run() {
         await execShellCommand('ssh-keyscan uptermd.upterm.dev 2> /dev/null >> ~/.ssh/known_hosts');
       } catch (error) {
         core.error(`error running ssh-keyscan. Error: ${error}`);
-        throw error;
       }
       // @cert-authority entry is the mandatory entry. generate the entry based on the known_hosts entry key
       try {
         await execShellCommand('cat <(cat ~/.ssh/known_hosts | awk \'{ print "@cert-authority * " $2 " " $3 }\') >> ~/.ssh/known_hosts');
       } catch (error) {
         core.error(`error generating cert-authority entry. Error: ${error}`);
-        throw error;
       }
     }
 
