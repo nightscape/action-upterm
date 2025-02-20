@@ -21,7 +21,6 @@ export async function run() {
       core.info(`Installing upterm from ${__dirname}/../upterm_linux_amd64.tar.gz`);
       core.info(command);
       await execShellCommand(command);
-      await execShellCommand('if ! command -v tmux &>/dev/null; then sudo apt-get -y install tmux; fi');
     } else {
       await execShellCommand('brew install owenthereal/upterm/upterm tmux');
     }
@@ -87,9 +86,10 @@ export async function run() {
     const uptermServer = core.getInput('upterm-server');
     const waitTimeoutMinutes = core.getInput('wait-timeout-minutes');
     core.info(`Creating a new session. Connecting to upterm server ${uptermServer}`);
-    await execShellCommand(`tmux new -d -s upterm-wrapper -x 132 -y 43 "/tmp/upterm host --accept --server '${uptermServer}' ${authorizedKeysParameter} --force-command 'tmux attach -t upterm' -- tmux new -s upterm -x 132 -y 43"`);
+    let tmuxPath = `${__dirname}/../tmux`;
+    await execShellCommand(`${tmuxPath} new -d -s upterm-wrapper -x 132 -y 43 "/tmp/upterm host --accept --server '${uptermServer}' ${authorizedKeysParameter} --force-command 'tmux attach -t upterm' -- tmux new -s upterm -x 132 -y 43"`);
     // resize terminal for largest client by default
-    await execShellCommand('tmux set -t upterm-wrapper window-size largest; tmux set -t upterm window-size largest');
+    await execShellCommand(`${tmuxPath} set -t upterm-wrapper window-size largest; ${tmuxPath} set -t upterm window-size largest`);
     console.debug('Created new session successfully');
     if (waitTimeoutMinutes !== '') {
       let timeout;
@@ -99,7 +99,7 @@ export async function run() {
         core.error(`wait-timeout-minutes must be set to an integer. Error: ${error}`);
         throw error;
       }
-      await execShellCommand(`( sleep $(( ${timeout} * 60 )); if ! pgrep -f '^tmux attach ' &>/dev/null; then tmux kill-server; fi ) & disown`);
+      await execShellCommand(`( sleep $(( ${timeout} * 60 )); if ! pgrep -f '^${tmuxPath} attach ' &>/dev/null; then ${tmuxPath} kill-server; fi ) & disown`);
       core.info(`wait-timeout-minutes set - will wait for ${waitTimeoutMinutes} minutes for someone to connect, otherwise shut down`);
     }
 
