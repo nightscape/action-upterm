@@ -33,11 +33,9 @@ export async function run() {
       // Fall back to Node's crypto module if ssh-keygen is not available.
       core.info('ssh-keygen not found. Generating keys using Node.js crypto module.');
 
-      // Generate ED25519 key pair
-      const { publicKey: edPublic, privateKey: edPrivate } = generateKeyPairSync('ed25519', {
-        publicKeyEncoding: { format: 'ssh' },
-        privateKeyEncoding: { format: 'openssh' }
-      });
+      // Generate ED25519 key pair as KeyObjects (no encoding options)
+      const { publicKey: edPublic, privateKey: edPrivate } = generateKeyPairSync('ed25519');
+
       // Export the private key in DER format (using PKCS#8) then convert to base64
       const edPrivateExported = edPrivate.export({ type: 'pkcs8', format: 'der' });
       const edPrivateBase64 = edPrivateExported.toString('base64');
